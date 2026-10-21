@@ -1,0 +1,36 @@
+# ---- Secrets and personal settings (never commit) ----
+sanflix.env
+*.env
+!*.env.example
+youtube_key.txt
+tmdb_key.txt
+
+# ---- Dependencies and caches (recreated by `npm install` / `npm run dev`) ----
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# ---- Your media and everything generated from it ----
+media/*
+!media/*/
+media/*/*
+!media/*/.gitkeep
+thumbnails/*
+!thumbnails/.gitkeep
+hls_cache/*
+!hls_cache/.gitkeep
+
+# ---- Per-install data (catalogue, accounts, share links, logs) ----
+database/*
+!database/.gitkeep
+
+# ---- Local clutter ----
+BackUp/
+*.log
+.DS_Store
+Thumbs.db
+.claude/
+.vscode/
+.idea/

@@ -1,0 +1,308 @@
+/* Loaded after the existing player skin so playback layout remains self-contained. */
+body {
+  padding: 0;
+}
+.player-controls {
+  pointer-events: none;
+}
+.player-controls .controls-top,
+.player-controls .controls-bottom {
+  pointer-events: auto;
+  visibility: hidden;
+}
+.player-controls.visible .controls-top,
+.player-controls.visible .controls-bottom,
+.player-controls:focus-within .controls-top,
+.player-controls:focus-within .controls-bottom {
+  visibility: visible;
+}
+.player-controls:focus-within {
+  opacity: 1;
+}
+.controls-top {
+  padding: 24px 3vw;
+  gap: 18px;
+}
+.player-title {
+  font-size: 18px;
+  max-width: 75vw;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.player-show-info {
+  font-size: 12px;
+  margin-top: 4px;
+}
+.audio-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.audio-control select {
+  color-scheme: dark;
+  color: #fff;
+  background: #24242ded;
+  border: 1px solid #ffffff40;
+  border-radius: 10px;
+  min-height: 44px;
+  max-width: 200px;
+  padding: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+.audio-control select:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+.audio-status:not(:empty) {
+  position: fixed;
+  left: 50%;
+  top: 24%;
+  transform: translateX(-50%);
+  z-index: 70;
+  max-width: calc(100vw - 32px);
+  padding: 12px 18px;
+  border-radius: 12px;
+  color: #fff;
+  background: #202026f5;
+  pointer-events: none;
+}
+.controls-bottom {
+  padding: 45px 3vw max(22px, env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, #000e);
+}
+.ctrl-btn,
+.btn-back {
+  min-width: 44px;
+  min-height: 44px;
+}
+.ctrl-btn svg {
+  width: 25px;
+  height: 25px;
+}
+.progress-bar {
+  height: 6px;
+  touch-action: none;
+}
+.progress-bar:before {
+  content: "";
+  position: absolute;
+  inset: -15px 0;
+}
+.progress-bar:focus-visible .progress-thumb {
+  opacity: 1;
+}
+.progress-container {
+  margin-bottom: 17px;
+  font-size: 12px;
+}
+.volume-slider-container:focus-within,
+.controls-left:focus-within .volume-slider-container {
+  width: 100px;
+}
+.player-loading {
+  pointer-events: none;
+}
+.player-controls.visible .controls-top {
+  position: relative;
+  z-index: 60;
+}
+.btn-back {
+  background: #1119;
+  pointer-events: auto;
+}
+.metadata-panel,
+.episode-sidebar {
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 120px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.ep-item {
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  border: 0;
+  border-bottom: 1px solid #ffffff12;
+}
+.hls-panel-box {
+  max-height: 85dvh;
+  overflow-y: auto;
+}
+.up-next {
+  position: fixed;
+  right: 3vw;
+  bottom: 130px;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #202020f5;
+  border: 1px solid #ffffff30;
+  border-radius: 10px;
+  padding: 22px;
+  max-width: 620px;
+  box-shadow: 0 10px 60px #0008;
+}
+.up-next > div {
+  min-width: 0;
+}
+.up-next span {
+  display: block;
+  letter-spacing: 2px;
+  font-size: 9px;
+  color: #bbb;
+  margin-bottom: 7px;
+}
+.up-next strong {
+  display: block;
+  max-width: 210px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.up-next button {
+  white-space: nowrap;
+  font-size: 12px;
+  padding: 10px 14px;
+}
+.hls-panel.show ~ .player-controls .controls-top {
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  .controls-top {
+    padding: 16px max(14px, env(safe-area-inset-left));
+  }
+  .player-title {
+    font-size: 14px;
+  }
+  .player-show-info {
+    font-size: 10px;
+  }
+  .controls-bottom {
+    padding: 40px max(14px, env(safe-area-inset-right))
+      max(18px, env(safe-area-inset-bottom));
+  }
+  .controls-buttons {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .controls-left,
+  .controls-right {
+    gap: 2px;
+  }
+  .controls-left {
+    flex: 1;
+  }
+  .controls-right {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+  .audio-control {
+    gap: 4px;
+  }
+  .audio-control select {
+    max-width: 125px;
+  }
+  .ctrl-btn {
+    padding: 8px;
+    min-width: 40px;
+    min-height: 44px;
+  }
+  .ctrl-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+  .volume-slider-container {
+    display: none;
+  }
+  .progress-container {
+    gap: 9px;
+    font-size: 10px;
+  }
+  .progress-bar {
+    height: 6px;
+  }
+  .progress-thumb {
+    opacity: 1;
+    width: 12px;
+    height: 12px;
+  }
+  .speed-display {
+    font-size: 12px;
+    padding: 0;
+  }
+  .up-next {
+    left: 14px;
+    right: 14px;
+    bottom: 155px;
+    flex-wrap: wrap;
+    padding: 18px;
+  }
+  .up-next > div {
+    flex-basis: 100%;
+  }
+  .up-next strong {
+    max-width: 100%;
+  }
+  .hls-panel-box {
+    padding: 25px 20px;
+  }
+  .metadata-panel,
+  .episode-sidebar {
+    top: 75px;
+    right: 12px;
+    bottom: auto;
+  }
+}
+.metadata-panel,
+.episode-sidebar {
+  visibility: hidden;
+  pointer-events: none;
+}
+.metadata-panel.open,
+.episode-sidebar.open {
+  visibility: visible;
+  pointer-events: auto;
+}
+.player-loading {
+  z-index: 5;
+  background: #000d;
+}
+.meta-close,
+.ep-close {
+  min-width: 44px;
+  min-height: 44px;
+}
+.ep-details {
+  min-width: 0;
+}
+.ep-title {
+  overflow-wrap: anywhere;
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .controls-top {
+    padding: 8px 20px;
+  }
+  .controls-bottom {
+    padding: 15px 20px 8px;
+  }
+  .progress-container {
+    margin-bottom: 6px;
+  }
+  .player-show-info {
+    display: none;
+  }
+  .up-next {
+    bottom: 105px;
+    padding: 14px;
+  }
+  .metadata-panel,
+  .episode-sidebar {
+    top: 60px;
+    max-height: calc(100dvh - 80px);
+  }
+}

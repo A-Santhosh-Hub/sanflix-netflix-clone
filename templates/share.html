@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{% if available %}{{ title }} — SANFLIX{% else %}Link unavailable — SANFLIX{% endif %}</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="stylesheet" href="/static/share.css" />
+    {% include '_appearance_head.html' %}
+  </head>
+  <body class="login-page glass-ui share-page">
+    <main class="login-card share-card">
+      <div class="login-topline">
+        <span class="logo">SAN<span>FLIX</span></span>{% include '_appearance_toggle.html' %}
+      </div>
+      {% if available %}
+      <p class="eyebrow">SHARED WITH YOU</p>
+      <h1>{{ title }}</h1>
+      <p class="share-meta">
+        {% if duration and duration != 'Unknown' %}{{ duration }}{% endif %}
+        {% if size %}{% if duration and duration != 'Unknown' %} · {% endif %}{{ size }}{% endif %}
+      </p>
+      {% if has_art %}<img id="share-art" class="share-art" alt="" />{% endif %}
+      {% if allow_stream %}
+      <video id="share-video" controls playsinline preload="metadata"></video>
+      <p id="share-note" class="share-note" role="status"></p>
+      {% endif %}
+      {% if allow_download %}
+      <a id="share-download" class="btn-play share-download" href="#" download>Download original file</a>
+      {% endif %}
+      <p class="login-note">
+        This private link opens only this title. It expires
+        <time id="share-expiry" data-epoch="{{ expires_at }}">{{ expires_text }}</time>.
+      </p>
+      {% else %}
+      <h1>This link is not available</h1>
+      <p>
+        It may have expired, been turned off, or the file may have moved. Ask the
+        sender for a new link.
+      </p>
+      {% endif %}
+      <p class="site-credit">Made by {% include '_credit.html' %}</p>
+    </main>
+    {% if available %}
+    {% if allow_stream %}<script src="/static/vendor/hls.min.js" defer></script>{% endif %}
+    <script src="/static/share-page.js" defer></script>
+    {% endif %}
+  </body>
+</html>

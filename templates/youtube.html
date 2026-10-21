@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0c0e14" />
+    <title>YouTube — SANFLIX</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+    {% include '_appearance_head.html' %}
+    <link rel="stylesheet" href="/static/youtube-tv.css" />
+  </head>
+  <body class="glass-ui browse-mode">
+    <a class="skip-link" href="#content">Skip to YouTube</a>
+    <header class="navbar" id="navbar">
+      <a href="/" class="logo" aria-label="SANFLIX home"
+        >SAN<span>FLIX</span></a
+      >
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="/" class="nav-link">Home</a
+        ><a href="/#series" class="nav-link">TV Shows</a
+        ><a href="/#movie" class="nav-link">Movies</a
+        ><a href="/#music" class="nav-link">Music</a
+        ><a href="/#favorites" class="nav-link">My List</a
+        ><a href="/youtube" class="nav-link active" aria-current="page"
+          >YouTube</a
+        ><a href="/hub" class="nav-link">Hub</a>
+      </nav>
+      <div class="nav-right">
+        {% include '_appearance_toggle.html' %}
+        <span class="library-avatar" aria-label="Personal library">S</span>
+        {% if session.get('viewer') or session.get('admin') %}
+        <form action="/logout" method="post" class="logout-form">
+          <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}"
+          /><button type="submit">Sign out</button>
+        </form>
+        {% endif %}
+      </div>
+    </header>
+    <main class="content yt-page" id="content" tabindex="-1">
+      <div class="browse-heading">
+        <div>
+          <p class="eyebrow">LEARN AND WATCH</p>
+          <h1>YouTube learning</h1>
+          <p class="muted">
+            Search, explore channels, and watch lessons right here. Use the arrow keys and OK on your TV remote.
+          </p>
+        </div>
+      </div>
+      <aside class="yt-data-note">
+        <strong>Your data, your choice.</strong>
+        <p>The TV player streams public videos through your SANFLIX computer, without
+          loading YouTube's advertising player. Internet is still needed. Saved lessons are links, not downloads.
+          For tutorials that work without internet, use your <a href="/">shared local library</a>.</p>
+        <label><input type="checkbox" id="yt-previews" /> Load thumbnail previews (uses extra data)</label>
+      </aside>
+      <form class="yt-form" id="yt-form" role="search">
+        <label class="sr-only" for="yt-input"
+          >Search YouTube or paste a link</label
+        >
+        <input
+          id="yt-input"
+          type="text"
+          autocomplete="off"
+          placeholder="Search videos, channels, or courses"
+          data-search="on"
+        />
+        <button class="btn-play" type="submit">
+          Search
+        </button>
+      </form>
+      <div class="yt-toolbar" id="yt-modes" role="group" aria-label="Search category">
+        <button type="button" data-mode="videos" aria-pressed="true">Videos</button>
+        <button type="button" data-mode="channels" aria-pressed="false">Channels</button>
+        <button type="button" data-mode="playlists" aria-pressed="false">Playlists / courses</button>
+        <label>Language <select id="yt-language"><option value="">Any language</option><option>Tamil</option><option>English</option><option>Hindi</option></select></label>
+      </div>
+      <div class="yt-toolbar" id="yt-topics" role="group" aria-label="Explore a topic">
+        <button type="button" data-query="Mathematics lessons">Mathematics</button>
+        <button type="button" data-query="Science lessons">Science</button>
+        <button type="button" data-query="English speaking lessons">Learn English</button>
+        <button type="button" data-query="Python programming tutorial">Coding</button>
+        <button type="button" data-query="History documentary">History</button>
+        <button type="button" data-query="Competitive exam preparation">Exam preparation</button>
+      </div>
+      <div class="yt-toolbar" id="yt-recent" aria-label="Recent searches"></div>
+      <p class="yt-status" id="yt-status" role="status" aria-live="polite">Choose a topic or search to begin. Videos play only when you select them.</p>
+      <section class="yt-player hidden" id="yt-player" aria-label="Video player">
+        <button class="btn-info" id="yt-player-back" type="button">Back to browsing</button>
+        <label class="yt-quality" for="yt-quality">TV quality
+          <select id="yt-quality">
+            <option value="144">Up to 144p · least data</option>
+            <option value="360" selected>Up to 360p · save data</option>
+            <option value="720">Up to 720p · clearer picture</option>
+          </select>
+        </label>
+        <button class="btn-play" id="yt-load" type="button">Load video · uses internet</button>
+        <div class="yt-frame" id="yt-frame"></div>
+        <div id="yt-timeline" class="yt-timeline hidden">
+          <label for="yt-seek">Lesson position</label>
+          <input id="yt-seek" type="range" min="0" max="1" value="0" step="1" />
+          <span id="yt-time"></span>
+        </div>
+        <div class="yt-player-bar">
+          <strong id="yt-player-title">YouTube video</strong>
+          <button class="btn-info" id="yt-save" type="button">+ Save</button>
+          <button class="btn-info hidden" id="yt-stop" type="button">Stop loading</button>
+          <button class="btn-info hidden" id="yt-next" type="button">Next lesson</button>
+          <label><input type="checkbox" id="yt-autonext" /> Play next automatically</label>
+        </div>
+        <details><summary>Other playback options</summary>
+        <a id="yt-original" target="_blank" rel="noopener noreferrer">Open on YouTube</a>
+        <button class="btn-info" id="yt-official" type="button">Use YouTube player · may show ads</button></details>
+      </section>
+      <section class="yt-section hidden" id="yt-results-section">
+        <div class="yt-toolbar"><button class="btn-info hidden" id="yt-back" type="button">Back</button><h3 class="row-title" id="yt-results-title">Search results</h3></div>
+        <div class="yt-grid" id="yt-results"></div>
+        <button class="btn-info hidden" id="yt-more" type="button">Show more</button>
+      </section>
+      <section class="yt-section">
+        <h3 class="row-title">Saved videos</h3>
+        <p class="muted" id="yt-saved-empty">
+          Saved lesson links appear here, on this device. Watching them still needs internet.
+        </p>
+        <div class="yt-grid" id="yt-saved"></div>
+      </section>
+      <p class="site-credit">Made by {% include '_credit.html' %}</p>
+    </main>
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <a class="nav-link" href="/"
+        ><svg viewBox="0 0 24 24">
+          <path d="m3 10 9-7 9 7v11h-6v-7H9v7H3Z" /></svg
+        ><span>Home</span></a
+      ><a class="nav-link" href="/#favorites"
+        ><svg viewBox="0 0 24 24"><path d="M6 3h12v19l-6-4-6 4Z" /></svg
+        ><span>My List</span></a
+      ><a class="nav-link active" href="/youtube" aria-current="page"
+        ><svg viewBox="0 0 24 24">
+          <rect x="3" y="6" width="18" height="12" rx="4" />
+          <path d="m10 9.5 5 2.5-5 2.5Z" /></svg
+        ><span>YouTube</span></a
+      ><a class="nav-link" href="/hub"
+        ><svg viewBox="0 0 24 24">
+          <rect x="6" y="2.5" width="12" height="19" rx="3" />
+          <path d="m10.5 9 4 2.5-4 2.5Z" /></svg
+        ><span>Hub</span></a
+      >
+    </nav>
+    <script src="/static/common.js"></script>
+    <script src="/static/youtube.js"></script>
+    <script src="/static/tv-navigation.js"></script>
+  </body>
+</html>

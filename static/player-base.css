@@ -1,0 +1,687 @@
+/* Original player components; responsive geometry is in player.css. */
+body {
+  background: #000;
+  margin: 0;
+  overflow: hidden;
+  cursor: none;
+}
+
+body.controls-visible {
+  cursor: default;
+}
+
+.player-wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+/* ─── Controls Overlay ─── */
+.player-controls {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.player-controls.visible {
+  opacity: 1;
+}
+
+/* Top bar */
+.controls-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.player-title {
+  font-family: "Inter", sans-serif;
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.player-show-info {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-family: "Inter", sans-serif;
+}
+
+/* Bottom bar */
+.controls-bottom {
+  padding: 0 24px 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+}
+
+/* Progress bar */
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-family: "Inter", sans-serif;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: height 0.15s;
+}
+
+.progress-bar:hover {
+  height: 8px;
+}
+
+.progress-buffered {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.progress-filled {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #e50914;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.progress-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: #e50914;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.progress-bar:hover .progress-thumb {
+  opacity: 1;
+}
+
+.progress-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.progress-bar:hover .progress-tooltip {
+  opacity: 1;
+}
+
+/* Button row */
+.controls-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.controls-left,
+.controls-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ctrl-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.ctrl-btn svg {
+  width: 28px;
+  height: 28px;
+}
+
+.volume-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 0;
+  overflow: hidden;
+  transition: width 0.3s ease;
+}
+
+.ctrl-btn:hover + .volume-slider-container,
+.volume-slider-container:hover {
+  width: 100px;
+}
+
+.volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.speed-display {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  font-family: "Inter", sans-serif;
+  padding: 4px 8px;
+}
+
+/* Center play indicator */
+.center-indicator {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.center-indicator.show {
+  opacity: 1;
+}
+
+.center-indicator svg {
+  width: 40px;
+  height: 40px;
+  color: #fff;
+}
+
+/* Metadata panel */
+.metadata-panel {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 380px;
+  height: 100%;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(20px);
+  z-index: 30;
+  transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 24px;
+  overflow-y: auto;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.metadata-panel.open {
+  right: 0;
+}
+
+.metadata-panel h3 {
+  font-family: "Inter", sans-serif;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: "Inter", sans-serif;
+}
+
+.meta-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+}
+
+.meta-value {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.meta-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Episode sidebar */
+.episode-sidebar {
+  position: fixed;
+  top: 0;
+  right: -450px;
+  width: 420px;
+  height: 100%;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(20px);
+  z-index: 30;
+  transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.episode-sidebar.open {
+  right: 0;
+}
+
+.episode-sidebar-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.episode-sidebar-header h3 {
+  font-family: "Inter", sans-serif;
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.episode-sidebar-header p {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+}
+
+.ep-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.season-group {
+  padding: 16px 24px;
+}
+
+.season-label {
+  font-family: "Inter", sans-serif;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.ep-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: "Inter", sans-serif;
+}
+
+.ep-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ep-item.active {
+  background: rgba(229, 9, 20, 0.2);
+  border: 1px solid rgba(229, 9, 20, 0.4);
+}
+
+.ep-number {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1.5rem;
+  font-weight: 700;
+  min-width: 30px;
+}
+
+.ep-details {
+  flex: 1;
+}
+
+.ep-title {
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.ep-duration {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+/* Loading spinner — Branded */
+.player-loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  z-index: 100;
+  gap: 24px;
+}
+
+.player-loading.hidden {
+  display: none;
+}
+
+.loading-brand {
+  font-family: "Inter", sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #e50914;
+  letter-spacing: -1px;
+  text-shadow: 0 0 40px rgba(229, 9, 20, 0.6);
+  animation: brandPulse 1.5s ease-in-out infinite;
+}
+
+.loading-brand span {
+  color: #fff;
+}
+
+@keyframes brandPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.97);
+  }
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-top-color: #e50914;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Seek flash overlay */
+.seek-flash {
+  position: fixed;
+  top: 0;
+  width: 30%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 15;
+}
+
+.seek-flash.left {
+  left: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.08), transparent);
+}
+.seek-flash.right {
+  right: 0;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.08), transparent);
+}
+.seek-flash.show {
+  opacity: 1;
+}
+
+.seek-flash svg {
+  width: 40px;
+  height: 40px;
+  color: rgba(255, 255, 255, 0.8);
+}
+/* HLS Panel */
+.hls-panel {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hls-panel.show {
+  display: flex;
+}
+
+.hls-panel-box {
+  background: rgba(20, 20, 20, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 36px 40px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+}
+
+.hls-panel-box h2 {
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.hls-panel-box p {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.9rem;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.hls-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.hls-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e50914, #ff4444);
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.5s ease;
+  animation: hlsPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes hlsPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.hls-progress-fill.done {
+  animation: none;
+  opacity: 1;
+}
+
+.hls-status-text {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  font-family: "Inter", sans-serif;
+  margin-bottom: 20px;
+}
+
+.hls-btn-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn-hls-start {
+  background: #e50914;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.15s;
+}
+
+.btn-hls-start:hover {
+  background: #c0070f;
+  transform: scale(1.03);
+}
+
+.btn-hls-start:disabled {
+  background: rgba(229, 9, 20, 0.4);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-hls-cancel {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-hls-cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.hls-badge {
+  display: inline-block;
+  background: rgba(229, 9, 20, 0.15);
+  color: #e50914;
+  border: 1px solid rgba(229, 9, 20, 0.3);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: "Inter", sans-serif;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
+}
+
+.ctrl-btn .hls-icon-label {
+  font-size: 0.72rem;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ctrl-btn.hls-active .hls-icon-label {
+  color: #e50914;
+}

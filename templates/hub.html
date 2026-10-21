@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0c0e14" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <title>Hub — SANFLIX</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+    {% include '_appearance_head.html' %}
+    <link rel="stylesheet" href="/static/hub.css" />
+  </head>
+  <body class="glass-ui browse-mode hub-body">
+    <a class="skip-link" href="#content">Skip to Hub</a>
+    <header class="navbar" id="navbar">
+      <a href="/" class="logo" aria-label="SANFLIX home"
+        >SAN<span>FLIX</span></a
+      >
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="/" class="nav-link">Home</a
+        ><a href="/#series" class="nav-link">TV Shows</a
+        ><a href="/#movie" class="nav-link">Movies</a
+        ><a href="/#music" class="nav-link">Music</a
+        ><a href="/#favorites" class="nav-link">My List</a
+        ><a href="/youtube" class="nav-link">YouTube</a
+        ><a href="/hub" class="nav-link active" aria-current="page">Hub</a>
+      </nav>
+      <div class="nav-right">
+        {% include '_appearance_toggle.html' %}
+        <span class="library-avatar" aria-label="Personal library">S</span>
+        {% if session.get('viewer') or session.get('admin') %}
+        <form action="/logout" method="post" class="logout-form">
+          <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}"
+          /><button type="submit">Sign out</button>
+        </form>
+        {% endif %}
+      </div>
+    </header>
+
+    <main class="content hub-page" id="content" tabindex="-1">
+      <div class="hub-modes" role="tablist" aria-label="Hub area">
+        <button type="button" role="tab" id="hub-mode-mine" data-mode="mine" aria-selected="true">My Media</button>
+        <button type="button" role="tab" id="hub-mode-friends" data-mode="friends" aria-selected="false">Friends' Media <span class="hub-count" id="hub-friends-count">0</span></button>
+      </div>
+      <div id="hub-requests" class="hub-requests" aria-live="polite"></div>
+
+      <div id="hub-local">
+      <div class="hub-head">
+        <div>
+          <p class="eyebrow">YOUR DEVICE, YOUR MEDIA</p>
+          <h1>Hub <span class="hub-pill">On this device only</span></h1>
+          <p class="muted hub-privacy">
+            Pick videos, photos and music from this device. They are played right
+            here and <strong>never uploaded</strong>. Only you can see them.
+          </p>
+        </div>
+        <button type="button" class="btn-play hub-add-trigger hub-add-top">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          Add Media
+        </button>
+      </div>
+
+      <p id="hub-notice" class="hub-notice" role="status" aria-live="polite" hidden></p>
+
+      <section id="hub-empty" class="hub-empty" aria-labelledby="hub-empty-title">
+        <h2 id="hub-empty-title">Nothing here yet</h2>
+        <p>
+          Choose files or a whole folder from your phone or laptop. They stay on
+          this device and are forgotten when you close or reload this page.
+        </p>
+        <button type="button" class="btn-play hub-add-trigger hub-add-big">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          Add Media
+        </button>
+      </section>
+
+      <section id="hub-browser" class="hub-browser" hidden>
+        <div class="hub-toolbar">
+          <div class="hub-chips">
+          <div class="hub-filters" role="group" aria-label="Filter by type">
+            <button type="button" class="hub-filter active" data-filter="all" aria-pressed="true">All <span class="hub-count" data-count="all">0</span></button>
+            <button type="button" class="hub-filter" data-filter="video" aria-pressed="false">Videos <span class="hub-count" data-count="video">0</span></button>
+            <button type="button" class="hub-filter" data-filter="image" aria-pressed="false">Photos <span class="hub-count" data-count="image">0</span></button>
+            <button type="button" class="hub-filter" data-filter="audio" aria-pressed="false">Audio <span class="hub-count" data-count="audio">0</span></button>
+          </div>
+          </div>
+          <label class="hub-search">
+            <span class="sr-only">Search by file or folder name</span>
+            <input id="hub-search" type="search" placeholder="Search file or folder name" autocomplete="off" />
+          </label>
+          <button type="button" id="hub-clear" class="btn-info hub-clear">Clear all</button>
+          <button type="button" id="hub-share-selected" class="btn-play hub-share-selected" hidden>Share <span id="hub-selected-count">0</span> selected to Hub</button>
+        </div>
+        <p id="hub-noresults" class="hub-noresults" role="status" hidden>
+          Nothing matches. Try another search or filter.
+        </p>
+        <div id="hub-library" class="hub-grid" aria-label="Media library"></div>
+      </section>
+      </div>
+
+      <section id="hub-friends" class="hub-friends" aria-label="Friends' media" hidden>
+        <div class="hub-room-head">
+          <p class="muted hub-privacy">
+            Items friends choose to share appear here. Files go <strong>device to device</strong>
+            and are never uploaded to SANFLIX. Anything you share can be played or downloaded by the
+            friends here without asking you again; use Stop sharing to take it back. Keep this page
+            open and your device awake while sharing.
+          </p>
+          <div class="hub-identity">
+            Sharing as <strong id="room-name">…</strong> <span id="room-tag" class="room-tag"></span>
+            <button type="button" id="room-rename" class="btn-info">Change name</button>
+            <span id="room-rename-box" class="room-rename-box" hidden>
+              <input id="room-name-input" type="text" maxlength="32" autocomplete="off" aria-label="Display name" />
+              <button type="button" id="room-name-save" class="btn-play">Save</button>
+            </span>
+          </div>
+        </div>
+        <p id="room-notice" class="hub-notice" role="status" aria-live="polite" hidden></p>
+        <div class="hub-toolbar">
+          <div class="hub-chips">
+            <div class="hub-filters" role="group" aria-label="Filter shared items by type">
+              <button type="button" class="hub-filter room-filter active" data-filter="all" aria-pressed="true">All</button>
+              <button type="button" class="hub-filter room-filter" data-filter="video" aria-pressed="false">Videos</button>
+              <button type="button" class="hub-filter room-filter" data-filter="image" aria-pressed="false">Photos</button>
+              <button type="button" class="hub-filter room-filter" data-filter="audio" aria-pressed="false">Audio</button>
+            </div>
+          </div>
+          <label class="hub-search">
+            <span class="sr-only">Search shared items by file or sender</span>
+            <input id="room-search" type="search" placeholder="Search file or sender" autocomplete="off" />
+          </label>
+          <span id="room-online" class="room-online" role="status"></span>
+        </div>
+        <section id="room-empty" class="hub-empty room-empty">
+          <h2>Nothing shared yet</h2>
+          <p>When a friend shares something, it appears here. To share your own, open My Media and choose Share to Hub.</p>
+        </section>
+        <div id="room-feed" class="room-feed" aria-label="Shared media" hidden></div>
+      </section>
+      <p class="site-credit">Made by {% include '_credit.html' %}</p>
+    </main>
+
+    <div class="hub-viewer" id="hub-viewer" role="dialog" aria-modal="true" aria-label="Media player" hidden>
+      <div class="hub-viewer-box">
+        <button type="button" class="hub-viewer-close" id="hub-viewer-close" aria-label="Close player">&times;</button>
+        <div class="hub-stage" id="hub-viewer-stage"></div>
+        <div class="hub-viewer-bar">
+          <div class="hub-viewer-info" id="hub-viewer-info"></div>
+          <div class="hub-viewer-actions" id="hub-viewer-actions"></div>
+          <div class="hub-viewer-nav">
+            <button type="button" class="btn-info" id="hub-viewer-prev" aria-label="Previous item">&lsaquo; Prev</button>
+            <button type="button" class="btn-info" id="hub-viewer-next" aria-label="Next item">Next &rsaquo;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="hub-fab hub-add-trigger" aria-label="Add Media" id="hub-fab" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+      <span>Add Media</span>
+    </button>
+
+    <div class="hub-dialog-backdrop" id="hub-dialog" role="dialog" aria-modal="true" aria-labelledby="hub-dialog-title" hidden>
+      <div class="hub-dialog">
+        <button type="button" class="modal-close" id="hub-dialog-close" aria-label="Close">&times;</button>
+        <h2 id="hub-dialog-title">Add media</h2>
+        <p class="hub-dialog-note">
+          Files stay on this device. Nothing is uploaded or shared.
+        </p>
+        <button type="button" class="hub-choice" id="hub-pick-files">
+          <strong>Select Files</strong>
+          <span>Choose several videos, photos or audio files.</span>
+        </button>
+        <button type="button" class="hub-choice" id="hub-pick-folder">
+          <strong>Select Folder</strong>
+          <span>Add every supported file inside a folder.</span>
+        </button>
+        <p class="hub-dialog-help" id="hub-folder-help"></p>
+      </div>
+    </div>
+
+    <input type="file" id="hub-input-files" multiple hidden
+      accept="video/*,image/*,audio/*,.mkv,.avi,.wmv,.flv,.mov,.m4v,.3gp,.ts,.heic,.heif,.avif,.flac,.opus,.m4a,.aac,.wma" />
+    <input type="file" id="hub-input-folder" multiple hidden webkitdirectory />
+
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <a class="nav-link" href="/"
+        ><svg viewBox="0 0 24 24">
+          <path d="m3 10 9-7 9 7v11h-6v-7H9v7H3Z" /></svg
+        ><span>Home</span></a
+      ><a class="nav-link" href="/#favorites"
+        ><svg viewBox="0 0 24 24"><path d="M6 3h12v19l-6-4-6 4Z" /></svg
+        ><span>My List</span></a
+      ><a class="nav-link" href="/youtube"
+        ><svg viewBox="0 0 24 24">
+          <rect x="3" y="6" width="18" height="12" rx="4" />
+          <path d="m10 9.5 5 2.5-5 2.5Z" /></svg
+        ><span>YouTube</span></a
+      ><a class="nav-link active" href="/hub" aria-current="page"
+        ><svg viewBox="0 0 24 24">
+          <rect x="6" y="2.5" width="12" height="19" rx="3" />
+          <path d="m10.5 9 4 2.5-4 2.5Z" /></svg
+        ><span>Hub</span></a
+      >
+    </nav>
+    <script src="/static/hub.js"></script>
+    <script src="/static/hub-transfer.js"></script>
+    <script src="/static/hub-room.js"></script>
+  </body>
+</html>

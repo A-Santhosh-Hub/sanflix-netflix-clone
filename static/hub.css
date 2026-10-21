@@ -1,0 +1,862 @@
+/* SANFLIX Hub: mobile-first. No inline styles are used anywhere (the page forbids them). */
+[hidden] {
+  display: none !important;
+}
+.hub-page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: 48px;
+}
+.hub-pill {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid #ffffff2e;
+  background: #ffffff10;
+  color: #cfcfcf;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.hub-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+/* Once media is added, the page becomes a compact player. */
+.hub-has-items .hub-head .eyebrow,
+.hub-has-items .hub-privacy {
+  display: none;
+}
+.hub-has-items .hub-head {
+  padding: 0 0 10px;
+}
+.hub-has-items .hub-head h1 {
+  font-size: 24px;
+  margin: 0;
+}
+.hub-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0 18px;
+}
+.hub-head h1 {
+  font-size: 34px;
+  letter-spacing: -0.7px;
+  margin: 6px 0;
+}
+.hub-privacy {
+  max-width: 560px;
+  font-size: 13px;
+}
+.hub-add-top,
+.hub-add-big,
+.hub-fab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-weight: 700;
+}
+.hub-add-top svg,
+.hub-add-big svg,
+.hub-fab svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.6;
+}
+.hub-fab {
+  position: fixed;
+  right: 18px;
+  bottom: calc(86px + env(safe-area-inset-bottom));
+  z-index: 95;
+  background: var(--red);
+  color: #fff;
+  border: 0;
+  box-shadow: 0 10px 30px #000a;
+}
+.hub-notice {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #ffffff14;
+  border: 1px solid #ffffff1f;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.hub-empty {
+  max-width: 560px;
+  margin: 40px auto;
+  padding: 36px 24px;
+  text-align: center;
+  border: 1px dashed #ffffff33;
+  border-radius: 18px;
+  background: #ffffff08;
+}
+.hub-empty p {
+  color: #b5b5b5;
+  line-height: 1.55;
+}
+.hub-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.hub-filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.hub-filter {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #ffffff26;
+  background: #ffffff0d;
+  color: #d6d6d6;
+  font-size: 13px;
+}
+.hub-filter.active {
+  background: #fff;
+  color: #111;
+  border-color: #fff;
+}
+.hub-count {
+  opacity: 0.65;
+  font-size: 11px;
+}
+.hub-search {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.hub-search input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ffffff26;
+  border-radius: 999px;
+  background: #ffffff10;
+  color: #fff;
+  font-size: 14px;
+}
+.hub-noresults {
+  color: #a1a1a1;
+  padding: 24px 0;
+}
+
+/* Details, tiles and thumbnails */
+.hub-details {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.hub-name {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+.hub-facts,
+.hub-folder {
+  color: #a8a8a8;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.hub-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at 80% 10%, #743b4140, transparent 70%), linear-gradient(130deg, #181c24, #303038);
+  overflow: hidden;
+}
+.hub-icon {
+  width: 44px;
+  height: 44px;
+  fill: none;
+  stroke: #ffffff55;
+  stroke-width: 1.6;
+}
+.hub-thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hub-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #000a;
+  font-size: 11px;
+}
+.hub-remove,
+.hub-speed {
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid #ffffff33;
+  background: #000a;
+  color: #fff;
+  font-size: 12px;
+}
+
+/* Unsupported media */
+.hub-unsupported {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  padding: 24px;
+  text-align: center;
+  max-width: 420px;
+}
+.hub-unsupported p {
+  margin: 0;
+  color: #cfcfcf;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.hub-unsupported-hint {
+  color: #a1a1a1 !important;
+  font-size: 12px !important;
+}
+.hub-unsupported-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 6px;
+}
+.hub-unsupported-actions a {
+  padding: 10px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+/* Add media dialog */
+.hub-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: end center;
+  padding: 16px;
+  background: #000a;
+  backdrop-filter: blur(6px);
+}
+.hub-dialog {
+  position: relative;
+  width: min(460px, 100%);
+  display: grid;
+  gap: 12px;
+  padding: 26px 22px calc(22px + env(safe-area-inset-bottom));
+  border-radius: 22px;
+  background: #181818;
+  border: 1px solid #ffffff1f;
+}
+.hub-dialog h2 {
+  margin: 0;
+}
+.hub-dialog-note,
+.hub-dialog-help {
+  margin: 0;
+  color: #a8a8a8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.hub-choice {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  text-align: left;
+  border-radius: 14px;
+  border: 1px solid #ffffff2a;
+  background: #ffffff0d;
+  color: #fff;
+}
+.hub-choice span {
+  color: #a8a8a8;
+  font-size: 13px;
+}
+.hub-choice:disabled {
+  opacity: 0.45;
+}
+@media (min-width: 700px) {
+  .hub-dialog-backdrop {
+    place-items: center;
+  }
+}
+@media (max-width: 640px) {
+  .hub-page {
+    /* Keep the feed clear of the floating Add Media button and the bottom navigation. */
+    padding-bottom: calc(150px + env(safe-area-inset-bottom));
+  }
+  .hub-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hub-head h1 {
+    font-size: 28px;
+  }
+  .hub-add-top {
+    display: none;
+  }
+  .hub-toolbar {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .hub-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    scrollbar-width: none;
+  }
+  .hub-chips::-webkit-scrollbar {
+    display: none;
+  }
+  .hub-filters {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+  }
+  .hub-filter {
+    padding: 7px 12px;
+    white-space: nowrap;
+  }
+  .hub-fab {
+    padding: 10px 16px;
+    right: 14px;
+  }
+}
+
+/* ---------- Shared Hub ---------- */
+.hub-modes {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+.hub-modes button {
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid #ffffff26;
+  background: #ffffff0d;
+  color: #d6d6d6;
+  font-weight: 600;
+  font-size: 14px;
+}
+.hub-modes [aria-selected="true"] {
+  background: #fff;
+  color: #111;
+  border-color: #fff;
+}
+.hub-mode-friends #hub-fab {
+  display: none;
+}
+.hub-requests {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.hub-requests:empty {
+  display: none;
+}
+.room-request {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #ffb74d66;
+  background: #ffb74d14;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.room-request.room-sending {
+  border-color: #ffffff2a;
+  background: #ffffff0d;
+}
+.room-request-actions {
+  display: flex;
+  gap: 8px;
+}
+.room-send-status {
+  flex-basis: 100%;
+  color: #a8a8a8;
+  font-size: 12px;
+}
+.hub-room-head {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.hub-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.room-rename-box {
+  display: inline-flex;
+  gap: 6px;
+}
+.room-rename-box input {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #ffffff2a;
+  background: #ffffff10;
+  color: #fff;
+}
+.room-tag {
+  color: #a8a8a8;
+  font-size: 12px;
+}
+.room-online {
+  color: #a8a8a8;
+  font-size: 12px;
+}
+.room-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.room-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #6b6b6b;
+}
+.room-dot.room-online {
+  background: #4cd97b;
+}
+.room-you {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #ffffff1f;
+  font-size: 11px;
+}
+.room-kind {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #000a;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 12px;
+}
+.room-info {
+  display: grid;
+  gap: 2px;
+}
+.room-name {
+  overflow-wrap: anywhere;
+  font-size: 16px;
+}
+.room-facts,
+.room-avail {
+  color: #a8a8a8;
+  font-size: 12px;
+}
+.room-offline .room-avail {
+  color: #ffb74d;
+}
+.room-status {
+  min-height: 18px;
+  font-size: 13px;
+  color: #d0d0d0;
+  overflow-wrap: anywhere;
+}
+.room-status.room-failed {
+  color: #ff8a80;
+}
+.room-progress {
+  width: 100%;
+  height: 8px;
+  accent-color: #ff4d67;
+}
+.room-player:empty {
+  display: none;
+}
+.room-player {
+  display: grid;
+  gap: 8px;
+}
+.room-media {
+  width: 100%;
+  max-height: 34vh;
+  border-radius: 12px;
+  background: #000;
+}
+.room-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.room-actions button,
+.room-save {
+  padding: 10px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+}
+.room-actions button:disabled {
+  opacity: 0.45;
+}
+.hub-share {
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid #ffffff33;
+  background: #ffffff14;
+  color: #fff;
+  font-size: 12px;
+}
+.hub-share.hub-shared {
+  background: #ff4d6733;
+  border-color: #ff4d67;
+}
+.hub-select {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #000a;
+}
+.hub-is-shared {
+  outline: 2px solid #ff4d67;
+}
+.hub-share-selected {
+  border-radius: 999px;
+}
+@media (max-width: 640px) {
+  .hub-modes button {
+    flex: 1;
+  }
+}
+
+/* Shared Hub: compact layout so a card's actions are never hidden on a phone */
+.hub-identity .btn-info {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+@media (max-width: 640px) {
+  .hub-room-has-cards .hub-room-head .hub-privacy {
+    display: none;
+  }
+  .hub-room-has-cards .hub-room-head {
+    margin-bottom: 6px;
+  }
+  .hub-modes {
+    margin-bottom: 10px;
+  }
+  .hub-identity {
+    font-size: 13px;
+  }
+}
+
+/* ---------- Boxes, like the Home page ----------
+   Every item is a box of the same shape, whatever the file's own shape. Click a box to play it. */
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 24px 16px;
+}
+.hub-tile,
+.room-card {
+  position: relative;
+  min-width: 0;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 230px;
+}
+.hub-tile-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.hub-tile .hub-art,
+.room-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 10;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  background: radial-gradient(ellipse at 80% 10%, #743b4140, transparent 70%), linear-gradient(130deg, #181c24, #303038);
+}
+.hub-tile-open:hover .hub-art,
+.hub-tile-open:focus-visible .hub-art,
+.room-art:hover {
+  box-shadow: 0 0 0 2px #eee;
+}
+.hub-tile .hub-thumb {
+  transition: transform 0.25s;
+}
+.hub-tile-open:hover .hub-thumb {
+  transform: scale(1.05);
+}
+.hub-tile .hub-badge {
+  left: auto;
+  right: 8px;
+}
+.hub-tile-play,
+.room-tile-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(transparent 50%, #000a);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.hub-tile-play::after,
+.room-tile-play::after {
+  content: "";
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #ffffffe6 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m9 6.5 9 5.5-9 5.5Z' fill='%23111'/%3E%3C/svg%3E") center / 60% no-repeat;
+}
+.hub-tile-open:hover .hub-tile-play,
+.hub-tile-open:focus-visible .hub-tile-play,
+.room-art:hover .room-tile-play {
+  opacity: 1;
+}
+@media (hover: none) {
+  .hub-tile-play,
+  .room-tile-play {
+    opacity: 1;
+    background: none;
+  }
+  .hub-tile-play::after,
+  .room-tile-play::after {
+    width: 38px;
+    height: 38px;
+    background-color: #ffffffcc;
+  }
+}
+.hub-tile .hub-details {
+  padding: 10px 2px 0;
+}
+.hub-tile .hub-name {
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.hub-tile .hub-facts,
+.hub-tile .hub-folder {
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hub-tile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 8px;
+}
+.hub-tile-actions .hub-share,
+.hub-tile-actions .hub-remove {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: #ffffff14;
+}
+
+/* Friends' media: the same boxes */
+.room-feed {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 24px 16px;
+}
+.room-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.room-card.room-has-player {
+  grid-column: 1 / -1;
+  content-visibility: visible;
+}
+.room-art {
+  cursor: pointer;
+}
+.room-offline .room-art,
+.room-own .room-art {
+  cursor: default;
+}
+.room-offline .room-art {
+  opacity: 0.55;
+}
+.room-name {
+  font-size: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.room-media {
+  max-height: 70vh;
+}
+/* The theme gives every button a 48px minimum; these are compact so a box stays small. */
+.room-feed .room-actions button,
+.room-feed .room-save,
+.hub-viewer .hub-viewer-nav button,
+.hub-room-head .hub-identity .btn-info {
+  min-height: 0;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+.room-feed .room-save {
+  align-self: start;
+}
+
+/* ---------- Player (opens over the page when a box is clicked) ---------- */
+.hub-viewing {
+  overflow: hidden;
+}
+.hub-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  background: #000000e6;
+}
+.hub-viewer-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(1100px, 100%);
+  max-height: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0b0b0f;
+}
+.hub-viewer-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: #000a;
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+}
+.hub-stage {
+  position: relative;
+  flex: 1 1 auto;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  height: min(72vh, 72dvh);
+  background: #000;
+  overflow: hidden;
+}
+.hub-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+audio.hub-media {
+  position: relative;
+  inset: auto;
+  height: 54px;
+  width: calc(100% - 32px);
+  background: none;
+}
+.hub-viewer-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+}
+.hub-viewer-info {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.hub-viewer-actions,
+.hub-viewer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hub-viewer-nav button {
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+
+/* Messages float, so they never move the page under a finger */
+.hub-notice {
+  position: fixed;
+  left: 50%;
+  top: calc(88px + env(safe-area-inset-top));
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  width: min(560px, calc(100vw - 28px));
+  margin: 0;
+  z-index: 96;
+  background: #23232b;
+  box-shadow: 0 10px 30px #000a;
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  .hub-grid,
+  .room-feed {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 10px;
+  }
+  .room-feed .room-actions button,
+  .room-feed .room-save {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .room-actions {
+    gap: 5px;
+  }
+  .hub-tile-actions {
+    gap: 5px;
+  }
+  .hub-tile-actions .hub-share,
+  .hub-tile-actions .hub-remove {
+    padding: 5px 9px;
+    font-size: 11px;
+  }
+  .hub-viewer {
+    padding: 0;
+  }
+  .hub-viewer-box {
+    width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+  .hub-stage {
+    height: 56vh;
+    height: 56dvh;
+  }
+}

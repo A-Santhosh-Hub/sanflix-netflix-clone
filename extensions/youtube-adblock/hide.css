@@ -1,0 +1,17 @@
+#masthead-ad,
+#player-ads,
+.video-ads,
+.ytp-ad-module,
+.ytp-ad-overlay-container,
+ytd-ad-slot-renderer,
+ytd-in-feed-ad-layout-renderer,
+ytd-display-ad-renderer,
+ytd-promoted-sparkles-web-renderer,
+ytd-promoted-video-renderer,
+ytd-banner-promo-renderer,
+ytd-companion-slot-renderer,
+ytd-statement-banner-renderer,
+ytm-promoted-sparkles-web-renderer,
+ytm-companion-ad-renderer {
+  display: none !important;
+}

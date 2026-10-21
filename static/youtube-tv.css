@@ -1,0 +1,20 @@
+.yt-page { max-width: 1800px; margin-inline: auto; }
+.yt-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-block: 18px; }
+.yt-toolbar button, .yt-toolbar select, .yt-player button, .yt-player summary, .yt-form button { min-height: 48px; }
+.yt-toolbar button, .yt-toolbar select { padding: 12px 20px; border: 1px solid #ffffff40; border-radius: 14px; color: #fff; background: #252633; font: inherit; cursor: pointer; }
+.yt-toolbar button[aria-pressed="true"] { background: #f2f2f5; color: #15151b; }
+.yt-toolbar label { display: flex; align-items: center; gap: 12px; }
+.yt-page :is(button, a, input, select, summary):focus-visible { outline: 4px solid #fff; outline-offset: 5px; box-shadow: 0 0 0 8px #5073b9; }
+.yt-page .yt-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 22px; }
+.yt-card-open { height: 100%; }
+.yt-card-open strong { font-size: 1.1rem; line-height: 1.5; }
+.yt-card-open span { line-height: 1.5; }
+.yt-card-open .yt-preview-placeholder { font-size: 1.25rem; }
+.yt-player > button { margin: 8px 12px 16px 0; }
+.yt-player summary { cursor: pointer; padding-block: 15px; }
+.yt-player details a { display: inline-block; padding: 16px; }
+#yt-more { margin-top: 24px; }
+.yt-toolbar .row-title { margin: 0; }
+.yt-card-open:focus-visible { transform: translateY(-3px); }
+@media (min-width: 1500px) { .yt-page { font-size: 20px; } .yt-page .yt-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .yt-page .yt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .yt-toolbar button { padding: 10px 14px; } .yt-card-open strong { font-size: .95rem; } }

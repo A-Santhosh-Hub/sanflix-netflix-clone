@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0c0e14" />
+    <title>SANFLIX — Your next great watch</title>
+    <meta
+      name="description"
+      content="Your movies, shows and music. All in one place."
+    />
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+    {% include '_appearance_head.html' %}
+  </head>
+  <body class="glass-ui">
+    <a class="skip-link" href="#content">Skip to library</a>
+    <header class="navbar" id="navbar">
+      <a href="/" class="logo" aria-label="SANFLIX home"
+        >SAN<span>FLIX</span></a
+      >
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#all" class="nav-link active" data-filter="all">Home</a
+        ><a href="#series" class="nav-link" data-filter="series">TV Shows</a
+        ><a href="#movie" class="nav-link" data-filter="movie">Movies</a
+        ><a href="#music" class="nav-link" data-filter="music">Music</a
+        ><a href="#favorites" class="nav-link" data-filter="favorites"
+          >My List</a
+        ><a href="/youtube" class="nav-link">YouTube</a
+        ><a href="/hub" class="nav-link">Hub</a>
+      </nav>
+      <div class="nav-right">
+        <div class="search-container" id="search-container">
+          <button
+            class="search-toggle icon-button"
+            id="search-toggle"
+            aria-label="Search library"
+            aria-expanded="false"
+            aria-controls="search-input"
+          >
+            <svg viewBox="0 0 24 24">
+              <circle cx="10.5" cy="10.5" r="7.5" />
+              <path d="m16 16 5 5" />
+            </svg>
+          </button>
+          <input
+            type="search"
+            id="search-input"
+            class="search-input"
+            aria-label="Search titles, shows or filenames"
+            placeholder="Titles, shows, music"
+            autocomplete="off"
+          /><button
+            id="search-clear"
+            class="icon-button search-clear"
+            aria-label="Clear search"
+          >
+            ×
+          </button>
+        </div>
+        {% include '_appearance_toggle.html' %}
+        <span class="library-avatar" aria-label="Personal library">S</span>
+        {% if session.get('viewer') or session.get('admin') %}
+        <form action="/logout" method="post" class="logout-form">
+          <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}"
+          /><button type="submit">Sign out</button>
+        </form>
+        {% endif %}
+      </div>
+    </header>
+    <nav class="category-tabs" aria-label="Browse categories">
+      <a href="#series" class="nav-link" data-filter="series">TV Shows</a
+      ><a href="#movie" class="nav-link" data-filter="movie">Movies</a
+      ><a href="#music" class="nav-link" data-filter="music">Music</a>
+    </nav>
+    <section class="hero" id="hero" aria-label="Featured in your library">
+      <div class="hero-background" id="hero-bg"></div>
+      <div class="hero-gradient"></div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="brand-mark">S</span
+          ><span id="hero-badge">YOUR PERSONAL CINEMA</span>
+        </div>
+        <h1 class="hero-title" id="hero-title">
+          A great night<br />starts here.
+        </h1>
+        <div class="hero-meta" id="hero-meta"></div>
+        <p class="hero-description" id="hero-description">
+          Your movies, shows and music. All in one place.
+        </p>
+        <div class="hero-actions" id="hero-actions">
+          <button class="btn-play" id="hero-play" disabled>▶ Play</button
+          ><button class="btn-info" id="hero-info" disabled>ⓘ More info</button>
+        </div>
+      </div>
+      <div class="hero-pagination" id="hero-pagination">
+        <span id="hero-position"></span
+        ><button
+          class="icon-button"
+          id="hero-prev"
+          aria-label="Previous featured title"
+        >
+          ‹</button
+        ><button
+          class="icon-button"
+          id="hero-next"
+          aria-label="Next featured title"
+        >
+          ›
+        </button>
+      </div>
+      <span class="hero-caption">CURATED BY YOU. ENJOYED HERE.</span>
+    </section>
+    <div
+      id="loading-skeleton"
+      class="loading-skeleton"
+      role="status"
+      aria-label="Loading your library"
+    >
+      <div class="skeleton skeleton-row-title"></div>
+      <div class="skeleton-cards">
+        {% for i in range(5) %}
+        <div class="skeleton skeleton-card"></div>
+        {% endfor %}
+      </div>
+    </div>
+    <main class="content" id="content" tabindex="-1" style="display: none">
+      <div class="browse-heading" id="browse-heading">
+        <div>
+          <p class="eyebrow" id="browse-eyebrow">MAKE YOURSELF AT HOME</p>
+          <h2 id="browse-title">Your next great watch</h2>
+          <p id="browse-count" class="muted"></p>
+        </div>
+        <label class="sort-control" id="sort-control"
+          >Sort by
+          <select id="sort-select">
+            <option value="default">Library order</option>
+            <option value="az">Title: A–Z</option>
+            <option value="za">Title: Z–A</option>
+            <option value="short">Shortest first</option>
+          </select></label
+        >
+      </div>
+      <section
+        class="content-row hidden"
+        id="search-results"
+        aria-label="Search results"
+      >
+        <h2 class="row-title">Search results</h2>
+        <div class="card-grid" id="search-grid"></div>
+      </section>
+      <section class="content-row hidden" id="continue-watching-section">
+        <h2 class="row-title">Pick up where you left off</h2>
+        <div class="card-slider" id="continue-watching"></div>
+      </section>
+      <section class="content-row hidden" id="favorites-section">
+        <h2 class="row-title">My List</h2>
+        <div class="card-slider" id="favorites-grid"></div>
+      </section>
+      <section class="content-row hidden" id="movies-section">
+        <h2 class="row-title">Movie night starts here</h2>
+        <div class="card-slider" id="movies-grid"></div>
+      </section>
+      <section class="content-row hidden" id="series-section">
+        <h2 class="row-title">One more episode</h2>
+        <div class="card-slider" id="series-grid"></div>
+      </section>
+      <section class="content-row hidden" id="music-section">
+        <h2 class="row-title">Find your rhythm</h2>
+        <div class="card-slider" id="music-grid"></div>
+      </section>
+      <section class="content-row hidden" id="history-section">
+        <h2 class="row-title">Watch it again</h2>
+        <div class="card-slider" id="history-grid"></div>
+      </section>
+      <section class="empty-state hidden" id="empty-state">
+        <span class="empty-icon" aria-hidden="true">＋</span>
+        <h2 id="empty-title">Your next favorite belongs here</h2>
+        <p id="empty-description">Your library is ready for its first title.</p>
+        <button class="btn-info hidden" id="empty-action">Back to home</button>
+      </section>
+    </main>
+    <footer class="footer">
+      <a class="logo" href="/">SAN<span>FLIX</span></a>
+      <p>Your library. Your cinema.</p>
+      <p class="network-link hidden" id="network-link"></p>
+      <div>
+        Made by <strong>{% include '_credit.html' %}</strong> ·
+        <a href="#" id="admin-login-link">Manage library</a> ·
+        <a href="#" id="shares-link">Shared links</a>
+      </div>
+    </footer>
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <a class="nav-link active" href="#all" data-filter="all"
+        ><svg viewBox="0 0 24 24">
+          <path d="m3 10 9-7 9 7v11h-6v-7H9v7H3Z" /></svg
+        ><span>Home</span></a
+      ><button class="nav-link" id="mobile-search">
+        <svg viewBox="0 0 24 24">
+          <circle cx="10.5" cy="10.5" r="7.5" />
+          <path d="m16 16 5 5" /></svg
+        ><span>Search</span></button
+      ><a class="nav-link" href="#favorites" data-filter="favorites"
+        ><svg viewBox="0 0 24 24"><path d="M6 3h12v19l-6-4-6 4Z" /></svg
+        ><span>My List</span></a
+      ><a class="nav-link" href="/youtube"
+        ><svg viewBox="0 0 24 24">
+          <rect x="3" y="6" width="18" height="12" rx="4" />
+          <path d="m10 9.5 5 2.5-5 2.5Z" /></svg
+        ><span>YouTube</span></a
+      ><a class="nav-link" href="/hub"
+        ><svg viewBox="0 0 24 24">
+          <rect x="6" y="2.5" width="12" height="19" rx="3" />
+          <path d="m10.5 9 4 2.5-4 2.5Z" /></svg
+        ><span>Hub</span></a
+      >
+    </nav>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div
+      class="modal-overlay hidden"
+      id="detail-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div class="modal-content">
+        <button
+          class="modal-close"
+          id="modal-close"
+          aria-label="Close title details"
+        >
+          ×
+        </button>
+        <div class="modal-backdrop" id="modal-backdrop"></div>
+        <div class="modal-body" id="modal-body">
+          <img class="modal-poster hidden" id="modal-poster" alt="" />
+          <p class="eyebrow" id="modal-category"></p>
+          <h2 id="modal-title" class="modal-title"></h2>
+          <div id="modal-meta" class="modal-meta"></div>
+          <div class="modal-actions">
+            <button class="btn-play" id="modal-play">▶ Play</button
+            ><button class="btn-info" id="modal-fav" aria-pressed="false">
+              ＋ My List</button
+            ><button
+              class="btn-icon"
+              id="modal-download"
+              aria-label="Download original file"
+              title="Download original file"
+            >
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" />
+              </svg></button
+            ><button
+              class="btn-icon"
+              id="modal-share"
+              aria-label="Create a private share link"
+              title="Share a private link"
+            >
+              <svg viewBox="0 0 24 24">
+                <path d="M12 15V3m-4 4 4-4 4 4M5 12v8h14v-8" />
+              </svg>
+            </button>
+          </div>
+          <p id="modal-description" class="modal-description"></p>
+          <div class="modal-episodes hidden" id="modal-episodes">
+            <div class="episode-heading">
+              <h3>Episodes</h3>
+              <label
+                >Season
+                <select id="season-select" aria-label="Select season"></select
+              ></label>
+            </div>
+            <div class="episode-list" id="episode-list"></div>
+          </div>
+          <details class="file-details">
+            <summary>File details</summary>
+            <p id="modal-file"></p>
+          </details>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal-overlay hidden"
+      id="admin-login-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-login-title"
+    >
+      <div class="modal-content admin-dialog">
+        <button
+          class="modal-close"
+          id="admin-login-close"
+          aria-label="Close admin sign in"
+        >
+          &times;
+        </button>
+        <p class="eyebrow">YOUR COLLECTION, YOUR WAY</p>
+        <h2 id="admin-login-title">Manage your library</h2>
+        <p class="form-description">
+          Sign in with the admin password to add new movies, shows and music.
+        </p>
+        <form id="admin-login-form" class="admin-form">
+          <div>
+            <label for="admin-password">Admin password</label
+            ><input
+              type="password"
+              id="admin-password"
+              name="password"
+              class="form-input"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+          <div id="admin-login-status" class="form-status" role="status"></div>
+          <button type="submit" id="admin-login-btn" class="btn-play">
+            Continue
+          </button>
+        </form>
+      </div>
+    </div>
+    <div
+      class="modal-overlay hidden"
+      id="admin-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-upload-title"
+    >
+      <div class="modal-content admin-dialog upload-dialog">
+        <button class="modal-close" id="admin-close" aria-label="Close upload">
+          &times;
+        </button>
+        <p class="eyebrow">SOMETHING NEW TO ENJOY</p>
+        <h2 id="admin-upload-title">Add to your library</h2>
+        <p class="form-description">
+          Choose a file. We’ll get it ready for your next watch.
+        </p>
+        <form id="admin-upload-form" class="admin-form">
+          <div>
+            <label for="upload-category">Category</label
+            ><select id="upload-category" name="category">
+              <option value="movies">Movies</option>
+              <option value="series">TV Shows</option>
+              <option value="music">Music</option>
+            </select>
+          </div>
+          <div id="upload-show-field" class="hidden">
+            <label for="upload-show">Show name</label
+            ><input
+              id="upload-show"
+              name="show"
+              type="text"
+              maxlength="120"
+              placeholder="For example: One Piece"
+              class="form-input"
+            /><small>Use an episode filename such as Show.S01E01.mp4.</small>
+          </div>
+          <div>
+            <label for="upload-file">Media file</label
+            ><input
+              type="file"
+              id="upload-file"
+              name="file"
+              accept=".mp4,.mkv,.webm,.avi,.mov,.mp3,.m4a,.aac,.wav,.flac,.ogg,.opus"
+              required
+            />
+          </div>
+          <div id="upload-progress-container" class="hidden">
+            <div class="upload-progress-label">
+              <span>Uploading...</span><span id="upload-percent">0%</span>
+            </div>
+            <div class="upload-track"><div id="upload-bar"></div></div>
+          </div>
+          <div id="upload-status" class="form-status" role="status"></div>
+          <button type="submit" id="admin-submit-btn" class="btn-play">
+            Upload media
+          </button>
+        </form>
+      </div>
+    </div>
+    <div
+      class="modal-overlay hidden"
+      id="share-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="share-title"
+    >
+      <div class="modal-content admin-dialog share-dialog">
+        <button class="modal-close" id="share-close" aria-label="Close share">
+          &times;
+        </button>
+        <p class="eyebrow">PRIVATE LINK</p>
+        <h2 id="share-title">Share this title</h2>
+        <p class="form-description" id="share-target"></p>
+        <form id="share-form" class="admin-form">
+          <div>
+            <label for="share-duration">Link expires after</label
+            ><select id="share-duration" name="duration"></select>
+          </div>
+          <fieldset class="share-permissions">
+            <legend>What can they do?</legend>
+            <label class="share-check"
+              ><input type="checkbox" id="share-stream" checked /> Watch in the
+              browser</label
+            >
+            <label class="share-check"
+              ><input type="checkbox" id="share-download" /> Download the
+              original file</label
+            >
+          </fieldset>
+          <div id="share-status" class="form-status" role="status"></div>
+          <button type="submit" id="share-create" class="btn-play">
+            Create private link
+          </button>
+        </form>
+        <div id="share-blocked" class="hidden">
+          <p class="form-description" id="share-blocked-text"></p>
+          <button type="button" id="share-signin" class="btn-play">
+            Sign in as admin
+          </button>
+        </div>
+        <div id="share-result" class="share-result hidden">
+          <label for="share-url">Your private link</label>
+          <div class="share-url-row">
+            <input id="share-url" class="form-input" type="text" readonly />
+            <button type="button" id="share-copy" class="btn-play">
+              Copy link
+            </button>
+          </div>
+          <p class="form-description" id="share-result-note"></p>
+          <p id="share-copy-status" class="form-status" role="status"></p>
+          <button type="button" id="share-another" class="btn-info">
+            Create another link
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal-overlay hidden"
+      id="shares-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="shares-title"
+    >
+      <div class="modal-content admin-dialog share-dialog">
+        <button
+          class="modal-close"
+          id="shares-close"
+          aria-label="Close shared links"
+        >
+          &times;
+        </button>
+        <p class="eyebrow">PRIVATE LINKS</p>
+        <h2 id="shares-title">Your shared links</h2>
+        <div id="shares-status" class="form-status" role="status"></div>
+        <div id="shares-list" class="shares-list"></div>
+      </div>
+    </div>
+    <script src="/static/common.js"></script>
+    <script src="/static/script.js"></script>
+    <script src="/static/admin.js"></script>
+    <script src="/static/share-dialog.js"></script>
+  </body>
+</html>

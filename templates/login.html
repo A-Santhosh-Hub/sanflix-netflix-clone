@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign in — SANFLIX</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    {% include '_appearance_head.html' %}
+  </head>
+  <body class="login-page glass-ui">
+    <main class="login-card">
+      <div class="login-topline">
+        <a class="logo" href="/">SAN<span>FLIX</span></a
+        >{% include '_appearance_toggle.html' %}
+      </div>
+      <h1>Welcome back</h1>
+      <p>Enter the library password to start watching.</p>
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <label for="password">Library password</label>
+        <input
+          id="password"
+          type="password"
+          name="password"
+          required
+          autocomplete="current-password"
+          autofocus
+        />
+        {% if error %}
+        <p role="alert" class="form-error">{{ error }}</p>
+        {% endif %}
+        <button class="btn-play" type="submit">Sign in</button>
+      </form>
+      <p class="login-note">Your library. Your cinema.</p>
+      <p class="site-credit">Made by {% include '_credit.html' %}</p>
+    </main>
+  </body>
+</html>

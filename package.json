@@ -1,0 +1,22 @@
+{
+  "name": "sanflix",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SANFLIX: a personal media streaming app (Python/Flask) with a Netflix-style interface. npm only runs the launcher and the optional tests.",
+  "author": "Santhosh A",
+  "homepage": "https://a-santhosh-hub.github.io/in/",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.cjs",
+    "start": "node scripts/dev.cjs",
+    "setup": "node scripts/dev.cjs --setup-only",
+    "hls": "node scripts/dev.cjs --hls",
+    "test": "node --test tests/*.test.cjs",
+    "test:e2e": "node tests/e2e/hub-p2p.e2e.cjs"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  }
+}

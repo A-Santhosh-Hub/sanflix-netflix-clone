@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "SANFLIX Ad Skipper for YouTube",
+  "version": "1.0.1",
+  "description": "Removes ad data from YouTube players (including the player inside SANFLIX), skips any ad that still appears, and hides ad boxes.",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://m.youtube.com/*",
+        "https://www.youtube-nocookie.com/embed/*"
+      ],
+      "js": [
+        "page.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://m.youtube.com/*",
+        "https://www.youtube-nocookie.com/embed/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "hide.css"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "ad-skipper@sanflix.local",
+      "strict_min_version": "128.0"
+    }
+  }
+}

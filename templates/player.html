@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>SANFLIX Player</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="stylesheet" href="/static/player-base.css" />
+
+    <link rel="stylesheet" href="/static/player.css" />
+    {% include '_appearance_head.html' %}
+  </head>
+
+  <body class="controls-visible glass-ui player-page">
+    <!-- Loading -->
+    <div
+      class="player-loading"
+      id="player-loading"
+      role="status"
+      aria-live="polite"
+    >
+      <div class="loading-brand">SAN<span>FLIX</span></div>
+      <div class="spinner"></div>
+    </div>
+
+    <!-- HLS Panel -->
+    <div class="hls-panel" id="hls-panel">
+      <div class="hls-panel-box">
+        <div class="hls-badge">PREPARED PLAYBACK</div>
+        <h2 id="hls-panel-title">Prepare your video</h2>
+        <p id="hls-panel-desc">
+          Prepare this video once to avoid live conversion while watching,
+          locally or over a network. Completed conversions are reused.
+        </p>
+        <div
+          class="hls-progress-bar"
+          id="hls-progress-bar"
+          style="display: none"
+        >
+          <div class="hls-progress-fill" id="hls-progress-fill"></div>
+        </div>
+        <div class="hls-status-text" id="hls-status-text"></div>
+        <div class="hls-btn-row">
+          <button class="btn-hls-start" id="btn-hls-start" onclick="startHLS()">
+            ▶ Start Converting
+          </button>
+          <button
+            class="btn-hls-cancel"
+            id="btn-hls-cancel"
+            onclick="closeHLSPanel()"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seek Flash Indicators -->
+    <div class="seek-flash left" id="seek-flash-left">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M1 4v6h6"></path>
+        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+        <text
+          x="12"
+          y="16"
+          fill="currentColor"
+          stroke="none"
+          font-size="8"
+          text-anchor="middle"
+          font-family="Inter"
+        >
+          10
+        </text>
+      </svg>
+    </div>
+    <div class="seek-flash right" id="seek-flash-right">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M23 4v6h-6"></path>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        <text
+          x="12"
+          y="16"
+          fill="currentColor"
+          stroke="none"
+          font-size="8"
+          text-anchor="middle"
+          font-family="Inter"
+        >
+          10
+        </text>
+      </svg>
+    </div>
+
+    <!-- Video -->
+    <div class="player-wrapper" id="player-wrapper">
+      <video id="video" preload="metadata" playsinline></video>
+    </div>
+
+    <!-- Center indicator (play/pause flash) -->
+    <div class="center-indicator" id="center-indicator">
+      <svg id="center-icon" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+    </div>
+
+    <!-- Controls Overlay -->
+    <div class="player-controls visible" id="player-controls">
+      <!-- Top bar -->
+      <div class="controls-top">
+        <button class="btn-back" id="btn-back" aria-label="Go back">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M19 12H5"></path>
+            <path d="M12 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+        <div>
+          <div class="player-title" id="player-title">Loading...</div>
+          <div class="player-show-info" id="player-show-info"></div>
+          <div class="player-show-info" id="playback-mode" aria-live="polite"></div>
+        </div>
+        {% include '_appearance_toggle.html' %}
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="controls-bottom">
+        <!-- Progress -->
+        <div class="progress-container">
+          <span id="time-current">0:00</span>
+          <div
+            class="progress-bar"
+            id="progress-bar"
+            role="slider"
+            tabindex="0"
+            aria-label="Playback position"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <div class="progress-buffered" id="progress-buffered"></div>
+            <div class="progress-filled" id="progress-filled"></div>
+            <div class="progress-thumb" id="progress-thumb"></div>
+            <div class="progress-tooltip" id="progress-tooltip">0:00</div>
+          </div>
+          <span id="time-total">0:00</span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="controls-buttons">
+          <div class="controls-left">
+            <!-- Play/Pause -->
+            <button class="ctrl-btn" id="btn-playpause" aria-label="Play/Pause">
+              <svg id="icon-play" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </button>
+
+            <!-- Rewind 10s -->
+            <button
+              class="ctrl-btn"
+              id="btn-rewind"
+              aria-label="Rewind 10 seconds"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M1 4v6h6"></path>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                <text
+                  x="12"
+                  y="16"
+                  fill="currentColor"
+                  stroke="none"
+                  font-size="8"
+                  text-anchor="middle"
+                  font-family="Inter"
+                >
+                  10
+                </text>
+              </svg>
+            </button>
+
+            <!-- Forward 10s -->
+            <button
+              class="ctrl-btn"
+              id="btn-forward"
+              aria-label="Forward 10 seconds"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M23 4v6h-6"></path>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                <text
+                  x="12"
+                  y="16"
+                  fill="currentColor"
+                  stroke="none"
+                  font-size="8"
+                  text-anchor="middle"
+                  font-family="Inter"
+                >
+                  10
+                </text>
+              </svg>
+            </button>
+
+            <!-- Volume -->
+            <button class="ctrl-btn" id="btn-volume" aria-label="Volume">
+              <svg
+                id="icon-volume"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polygon
+                  points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"
+                  fill="currentColor"
+                ></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+            </button>
+            <div class="volume-slider-container" id="volume-slider-container">
+              <input
+                type="range"
+                class="volume-slider"
+                id="volume-slider"
+                min="0"
+                max="1"
+                step="0.05"
+                value="1"
+                aria-label="Volume"
+              />
+            </div>
+          </div>
+
+          <div class="controls-right">
+            <label class="audio-control hidden" id="audio-control" for="audio-track">
+              <span>Audio</span>
+              <select id="audio-track" aria-label="Audio language"></select>
+            </label>
+            <!-- Speed -->
+            <button class="ctrl-btn" id="btn-speed" aria-label="Playback speed">
+              <span class="speed-display" id="speed-display">1x</span>
+            </button>
+
+            <!-- Subtitles -->
+            <button
+              class="ctrl-btn hidden"
+              id="btn-subtitles"
+              aria-label="Subtitles unavailable"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="1" y="4" width="22" height="16" rx="2"></rect>
+                <path d="M7 12h4"></path>
+                <path d="M13 12h4"></path>
+                <path d="M7 16h10"></path>
+              </svg>
+            </button>
+
+            <!-- Episodes (for series) -->
+            <button
+              class="ctrl-btn hidden"
+              id="btn-episodes"
+              aria-label="Episodes"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+              </svg>
+            </button>
+
+            <!-- Next Episode -->
+            <button
+              class="ctrl-btn hidden"
+              id="btn-next"
+              aria-label="Next episode"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 15 12 5 21 5 3"></polygon>
+                <rect x="17" y="3" width="3" height="18"></rect>
+              </svg>
+            </button>
+
+            <!-- HLS / Network Stream -->
+            <button
+              class="ctrl-btn"
+              id="btn-hls"
+              aria-label="Prepared playback (HLS)"
+              title="Prepare for playback without live conversion"
+            >
+              <span class="hls-icon-label">HLS</span>
+            </button>
+
+            <!-- Info -->
+            <button class="ctrl-btn" id="btn-metadata" aria-label="Video info">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 16v-4"></path>
+                <path d="M12 8h.01"></path>
+              </svg>
+            </button>
+
+            <!-- Fullscreen -->
+            <button
+              class="ctrl-btn"
+              id="btn-fullscreen"
+              aria-label="Fullscreen"
+            >
+              <svg
+                id="icon-fullscreen"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
+                <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
+                <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="audio-status" class="audio-status" role="status" aria-live="polite"></div>
+
+    <!-- Metadata Panel -->
+    <div class="metadata-panel" id="metadata-panel">
+      <button
+        class="meta-close"
+        id="meta-close"
+        aria-label="Close video information"
+      >
+        &times;
+      </button>
+      <h3 id="meta-title">Video Info</h3>
+      <div id="meta-items"></div>
+      <p class="site-credit">Made by {% include '_credit.html' %}</p>
+    </div>
+
+    <!-- Episode Sidebar -->
+    <div class="episode-sidebar" id="episode-sidebar">
+      <button class="ep-close" id="ep-close" aria-label="Close episodes">
+        &times;
+      </button>
+      <div class="episode-sidebar-header">
+        <h3 id="ep-show-name"></h3>
+        <p id="ep-now-playing"></p>
+      </div>
+      <div id="ep-seasons-list"></div>
+    </div>
+
+    <div class="up-next hidden" id="up-next" role="status">
+      <div><span>UP NEXT</span><strong id="up-next-title"></strong></div>
+      <button id="up-next-play" class="btn-play">Play next</button
+      ><button id="up-next-cancel" class="btn-info">Stay here</button>
+    </div>
+    <script src="/static/vendor/hls.min.js"></script>
+    <script src="/static/common.js"></script>
+    <script
+      id="player-config"
+      data-media-id="{{ media_id }}"
+      src="/static/player.js"
+    ></script>
+  </body>
+</html>
