@@ -105,7 +105,7 @@ When searching GitHub and the web for a self-hosted media player:
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR-USERNAME/sanflix.git
+git clone https://github.com/A-Santhosh-Hub/sanflix.git
 cd sanflix
 
 # Start the launcher
