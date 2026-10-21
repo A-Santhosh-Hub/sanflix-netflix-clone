@@ -192,39 +192,6 @@ sanflix/
 └── tests/                    # Unit, regression, and E2E browser tests
 ```
 
----
-
-## 🌟 Why This Shines in a Portfolio
-
-If you are showcasing SANFLIX on your portfolio or resume, here are the real-world engineering concepts it demonstrates:
-
-1. **Full-Stack Media Systems**: Not just a toy CRUD app—manages binary media pipelines, streaming HTTP 206 Partial Content (range requests), and HLS playlist chunking.
-2. **Audio/Video Processing**: Uses FFmpeg and FFprobe under the hood to handle container formats, embedded subtitles/audio streams, and resolution downscaling.
-3. **Real-Time WebRTC P2P**: Direct peer-to-peer data channels for browser-to-browser media streaming without server bandwidth consumption.
-4. **Resilient Security Design**: Dual-password authorization (Viewer vs. Admin), session revocation, rate-limiting against brute force, and strict proxy header sanitization.
-5. **Modern Glassmorphism UI**: High-end CSS backdrop filters, responsive mobile docks, and system accessibility preferences.
-
----
-
-## 📈 How to Publish on GitHub (SEO Guide)
-
-To make your repository rank high on Google and GitHub when people search for *"Netflix clone"*, *"Self hosted streaming server"*, or *"Personal media library"*:
-
-### 1. Recommended Repository Names
-- `sanflix` *(Clean, unique, memorable)*
-- `sanflix-netflix-clone` *(High SEO)*
-- `sanflix-media-server`
-
-### 2. Recommended Repository Description
-> *"SANFLIX — A lightweight self-hosted personal media streaming server with a Netflix-style cinematic glass UI, HLS adaptive streaming, YouTube integration, and WebRTC P2P sharing."*
-
-### 3. Add These GitHub Topics (Tags)
-Go to your GitHub repository homepage, click the **⚙ Gear icon** next to **About**, and add these topics:
-```text
-netflix-clone, self-hosted, media-server, streaming, python, flask, ffmpeg, hls-streaming, webrtc, personal-cloud, video-player, video-streaming, home-server
-```
-
----
 
 ## ⚖️ Legal Disclaimer & Copyright
 
