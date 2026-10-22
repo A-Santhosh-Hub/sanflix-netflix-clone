@@ -105,8 +105,8 @@ When searching GitHub and the web for a self-hosted media player:
 
 ```bash
 # Clone the repository
-git clone https://github.com/A-Santhosh-Hub/sanflix.git
-cd sanflix
+git clone https://github.com/A-Santhosh-Hub/sanflix-netflix-clone.git
+cd sanflix-netflix-clone
 
 # Start the launcher
 npm run dev
