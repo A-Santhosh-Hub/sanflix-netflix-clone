@@ -90,7 +90,12 @@ When searching GitHub and the web for a self-hosted media player:
 - **Localhost Bypass**: Instant access from the host machine without tedious login prompts.
 
 ---
+# 🎬 SANFLIX — Self-Hosted Personal Media Streaming Server & Netflix-Style Player
 
+**SANFLIX** is an open-source, lightweight self-hosted media streaming server framework created by **A-Santhosh-Hub**. Designed with a cinematic glassmorphism UI, it features real HLS video streaming, multi-track audio selection, and WebRTC peer-to-peer sharing capabilities.
+
+
+---
 ## 🚀 Quick Start
 
 ### Prerequisites
